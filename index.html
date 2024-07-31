@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carosello Mono Array</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://kit.fontawesome.com/63e420e540.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <!-- carousel -->
     <div id="carousel-container" class="carousel-container">
         <div class="main-image-container">
-            <!-- Le immagini principali saranno inserite qui -->
+            <img id="mainImage" src="" alt="">
+            <div class="image-info">
+                <h2 id="imageTitle"></h2>
+                <p id="imageText"></p>
+            </div>
         </div>
-        <div class="thumbnails-container">
-            <!-- Le miniature saranno inserite qui -->
-        </div>
+        
+        <div class="controls">
+            <button id="prevBtn">Prev</button>
+            <button id="nextBtn">Next ></button>
+            <button id="playPauseBtn">Start Autoplay</button>
+            <button id="directionBtn">Change Direction <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <div id="thumbnails" class="thumbnails"></div>
     </div>
     <script src="js/script.js"></script>
 </body>

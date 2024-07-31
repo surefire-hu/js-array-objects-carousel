@@ -1,66 +1,104 @@
 // Array di percorsi delle immagini
 const images = [
-    '../img/01.webp',
-    '../img/02.webp',
-    '../img/03.webp',
-    '../img/04.webp',
-    '../img/05.webp'
+    {
+        image: 'img/01.webp',
+        title: 'Marvel\'s Spiderman Miles Morale',
+        text: 'Experience the rise of Miles Morales as the new hero masters incredible, explosive new powers to become his own Spider-Man.',
+    }, {
+        image: 'img/02.webp',
+        title: 'Ratchet & Clank: Rift Apart',
+        text: 'Go dimension-hopping with Ratchet and Clank as they take on an evil emperor from another reality.',
+    }, {
+        image: 'img/03.webp',
+        title: 'Fortnite',
+        text: "Grab all of your friends and drop into Epic Games Fortnite, a massive 100 - player face - off that combines looting, crafting, shootouts and chaos.",
+    }, {
+        image: 'img/04.webp',
+        title: 'Stray',
+        text: 'Lost, injured and alone, a stray cat must untangle an ancient mystery to escape a long-forgotten city',
+    }, {
+        image: 'img/05.webp',
+        title: "Marvel's Avengers",
+        text: 'Marvel\'s Avengers is an epic, third-person, action-adventure game that combines an original, cinematic story with single-player and co-operative gameplay.',
+    }
 ];
 
-const mainContainer = document.querySelector('.main-image-container');
-const thumbnailsContainer = document.querySelector('.thumbnails-container');
 let currentIndex = 0;
-// Funzione per creare il carosello
-function createCarousel() {
-    for (let i = 0; i < images.length; i++) {//ciclo
-        const img = document.createElement('img');//creare tag img 
-        img.src = images[i];//percorso img in base all array
-        img.alt = `Immagine ${i + 1}`; //alt dell'img
-        img.className = `carousel-image ${i == 0 ? 'active' : ''}`; //o attiva o vuoto
-        mainContainer.appendChild(img);//img dentro in contenitore
-        // Crea miniatura
-        const thumbnail = document.createElement('img');
-        thumbnail.src = images[i];
-        thumbnail.alt = `Miniatura ${i + 1}`;
-        thumbnail.className = `thumbnail ${i === 0 ? 'active' : ''}`;
-        thumbnail.onclick = () => setActiveImage(i);
-        thumbnailsContainer.appendChild(thumbnail);
-    }
+let isPlaying = false;
+let direction = 1;
+let intervalId = null;
 
-    const prevButton = document.createElement('button');//tag bottone 
-    prevButton.className = 'carousel-button prev';//classe al bottone
-    prevButton.textContent = '<';//testo del bottone
-    prevButton.onclick = showPreviousImage;//funzione click
-    mainContainer.appendChild(prevButton);//prevButton dentro il contenitore
+const mainImage = document.getElementById('mainImage');
+const imageTitle = document.getElementById('imageTitle');
+const imageText = document.getElementById('imageText');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const directionBtn = document.getElementById('directionBtn');
+const thumbnails = document.getElementById('thumbnails');
 
-    const nextButton = document.createElement('button');
-    nextButton.className = 'carousel-button next';
-    nextButton.textContent = '>';
-    nextButton.onclick = showNextImage;
-    mainContainer.appendChild(nextButton);
+function updateImage() {
+  const currentImage = images[currentIndex];
+  mainImage.src = currentImage.image;
+  mainImage.alt = currentImage.title;
+  imageTitle.textContent = currentImage.title;
+  imageText.textContent = currentImage.text;
+  
+  // Update active thumbnail
+  document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+    thumb.classList.toggle('active', index == currentIndex);
+  });
 }
 
-function setActiveImage(index) {
-    const carouselImages = document.querySelectorAll('.carousel-image');//seleziona tutti gli elementi del carousel e lo fa diventare un array
-    const thumbnails = document.querySelectorAll('.thumbnail');//seleziona tutti gli elementi del tumnail e lo fa diventare un array
-    carouselImages[currentIndex].classList.remove('active');//rimuove classe active dell'elemento attuale
-    thumbnails[currentIndex].classList.remove('active');
-
-    currentIndex = index;
-
-
-    carouselImages[currentIndex].classList.add('active');//abbina classe active
-    thumbnails[currentIndex].classList.add('active');
+function next() {
+  currentIndex = (currentIndex + 1) % images.length;
+  updateImage();
 }
 
-// Funzione per mostrare l'immagine precedente
-function showPreviousImage() {
-    setActiveImage((currentIndex - 1 + images.length) % images.length);//seleziona elemento precedente
+function prev() {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  updateImage();
 }
 
-// Funzione per mostrare l'immagine successiva
-function showNextImage() {
-    setActiveImage((currentIndex + 1) % images.length);
+function setActive(index) {
+  currentIndex = index;
+  updateImage();
 }
 
-createCarousel();
+function toggleAutoplay() {
+  if (isPlaying) {
+    clearInterval(intervalId);
+    playPauseBtn.textContent = 'Start Autoplay';
+  } else {
+    intervalId = setInterval(() => {
+      direction == 1 ? next() : prev();
+    }, 3000);
+    playPauseBtn.textContent = 'Stop Autoplay';
+  }
+  isPlaying = !isPlaying;
+}
+
+toggleAutoplay();
+
+function toggleDirection() {
+  direction *= -1;
+  directionBtn.innerHTML = `Change Direction ${direction == 1 ? '<i class="fa-solid fa-arrow-right"></i>' : '<i class="fa-solid fa-arrow-left"></i>'}`;
+}
+
+// Creare thumbnails
+images.forEach((image, index) => {
+  const thumb = document.createElement('img');
+  thumb.src = image.image;
+  thumb.alt = image.title;
+  thumb.classList.add('thumbnail');
+  thumb.addEventListener('click', () => setActive(index));
+  thumbnails.appendChild(thumb);
+});
+
+// tutti i click
+prevBtn.addEventListener('click', prev);
+nextBtn.addEventListener('click', next);
+playPauseBtn.addEventListener('click', toggleAutoplay);
+directionBtn.addEventListener('click', toggleDirection);
+
+updateImage();
